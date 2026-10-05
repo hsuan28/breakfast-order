@@ -1,1 +1,1485 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>四海豆漿線上訂餐</title>
 
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",
+  "Microsoft JhengHei",sans-serif;
+  background:#f5f5f5;
+  color:#222
+}
+
+header{
+  background:#fff;
+  padding:16px;
+  border-bottom:1px solid #ddd;
+  position:sticky;
+  top:0;
+  z-index:5
+}
+
+header .type-switch{
+  margin:12px 0 0
+}
+
+h1{margin:0;font-size:21px}
+
+.sub{
+  font-size:13px;
+  color:#777;
+  margin-top:4px
+}
+
+.wrap{
+  max-width:800px;
+  margin:auto;
+  padding:14px 14px 110px
+}
+
+.notice{
+  background:#fff8df;
+  border:1px solid #ecd98d;
+  border-radius:12px;
+  padding:11px;
+  margin-bottom:14px;
+  font-size:13px
+}
+
+.type-switch{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:#e7e7e7;
+  border-radius:14px;
+  padding:4px;
+  margin-bottom:12px
+}
+
+.type-btn{
+  border:0;
+  border-radius:11px;
+  padding:11px 12px;
+  font-size:16px;
+  font-weight:800;
+  background:transparent;
+  color:#555
+}
+
+.type-btn.active{
+  background:#222;
+  color:#fff
+}
+
+.diet-switch{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px
+}
+
+.diet-btn{
+  border:0;
+  border-radius:999px;
+  padding:9px 15px;
+  background:#e7e7e7;
+  font-weight:700
+}
+
+.diet-btn.active{
+  background:#1f7a3a;
+  color:#fff
+}
+
+.veg-badge{
+  display:inline-block;
+  margin-left:6px;
+  padding:2px 7px;
+  border-radius:999px;
+  background:#e8f6ec;
+  color:#1f7a3a;
+  font-size:11px;
+  font-weight:800;
+  vertical-align:middle
+}
+
+.tabs{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  margin-bottom:12px
+}
+
+.tab{
+  border:0;
+  border-radius:999px;
+  padding:9px 15px;
+  white-space:nowrap;
+  background:#e7e7e7
+}
+
+.tab.active{
+  background:#222;
+  color:#fff
+}
+
+.card{
+  background:#fff;
+  border-radius:14px;
+  padding:14px;
+  margin:10px 0;
+  box-shadow:0 1px 5px #0000000b
+}
+
+.card-main{
+  display:flex;
+  justify-content:space-between;
+  gap:15px
+}
+
+.item-note{
+  width:100%;
+  margin:10px 0 0;
+  padding:9px 11px;
+  font-size:14px
+}
+
+.item-note-text{
+  font-size:12px;
+  color:#888;
+  margin-top:4px
+}
+
+.name{
+  font-weight:700
+}
+
+.desc{
+  font-size:12px;
+  color:#888;
+  margin-top:4px
+}
+
+.price{
+  font-weight:700;
+  margin-top:8px
+}
+
+.qty{
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.qty button{
+  width:35px;
+  height:35px;
+  border:0;
+  border-radius:50%;
+  background:#eee;
+  font-size:20px
+}
+
+.qty b{
+  min-width:20px;
+  text-align:center
+}
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  border-top:1px solid #ddd;
+  padding:10px 14px;
+  z-index:10
+}
+
+.bottomin{
+  max-width:800px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between
+}
+
+.total{
+  font-size:19px;
+  font-weight:800
+}
+
+.btn{
+  border:0;
+  background:#111;
+  color:#fff;
+  border-radius:10px;
+  padding:12px 20px;
+  font-size:16px;
+  font-weight:700
+}
+
+.btn:disabled{
+  background:#999
+}
+
+.panel{
+  background:#fff;
+  border-radius:14px;
+  padding:16px;
+  margin-top:14px;
+  display:none
+}
+
+.panel.show{
+  display:block
+}
+
+input,textarea{
+  width:100%;
+  padding:11px;
+  border:1px solid #ccc;
+  border-radius:9px;
+  margin:5px 0 12px;
+  font-size:15px
+}
+
+.line{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #eee;
+  padding:8px 0
+}
+
+.small{
+  font-size:12px;
+  color:#777
+}
+
+.ok{
+  text-align:center;
+  font-size:19px;
+  font-weight:800;
+  padding:15px
+}
+
+.orderNo{
+  text-align:center;
+  font-size:34px;
+  font-weight:900
+}
+
+.error{
+  background:#ffecec;
+  color:#b00020;
+  border:1px solid #ffbcbc;
+  padding:12px;
+  border-radius:10px;
+  margin-top:12px;
+  white-space:pre-wrap;
+  word-break:break-word
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>四海豆漿線上訂餐</h1>
+  <div class="sub">手機掃 QR Code 即可點餐</div>
+
+  <div class="type-switch" id="typeSwitch">
+    <button
+      class="type-btn active"
+      type="button"
+      onclick="showType('meal',this)"
+    >
+      餐點
+    </button>
+    <button
+      class="type-btn"
+      type="button"
+      onclick="showType('drink',this)"
+    >
+      飲料
+    </button>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <div class="notice" id="notice">
+    正在讀取菜單……
+  </div>
+
+  <div class="diet-switch" id="dietSwitch">
+    <button
+      class="diet-btn active"
+      type="button"
+      onclick="showDiet('all',this)"
+    >
+      全部
+    </button>
+    <button
+      class="diet-btn"
+      type="button"
+      onclick="showDiet('veg',this)"
+    >
+      素食
+    </button>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div id="menu"></div>
+
+
+  <!-- 確認訂單 -->
+
+  <div class="panel" id="checkout">
+
+    <h2>確認訂單</h2>
+
+    <div id="summary"></div>
+
+    <label>姓名／稱呼</label>
+
+    <input
+      id="customer"
+      placeholder="例如：王先生"
+    >
+
+
+    <label>桌號</label>
+
+    <input
+      id="tableNo"
+      placeholder="例如：3號桌"
+    >
+
+
+    <label>備註</label>
+
+    <textarea
+      id="note"
+      rows="3"
+      placeholder="例如：不要蔥、蛋要熟一點"
+    ></textarea>
+
+
+    <button
+      id="submitBtn"
+      class="btn"
+      style="width:100%"
+      onclick="submitOrder()"
+    >
+      送出訂單
+    </button>
+
+
+    <div id="errorBox"></div>
+
+  </div>
+
+
+  <!-- 訂單完成 -->
+
+  <div class="panel" id="result">
+
+    <div class="ok">
+      ✅ 訂單已送出
+    </div>
+
+    <div
+      class="small"
+      style="text-align:center"
+    >
+      訂單編號
+    </div>
+
+    <div
+      class="orderNo"
+      id="orderNo"
+    ></div>
+
+    <p style="text-align:center">
+      店家收到訂單後即可開始製作。
+    </p>
+
+    <button
+      class="btn"
+      style="width:100%"
+      onclick="resetOrder()"
+    >
+      繼續點餐
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- 購物車 -->
+
+<div class="bottom">
+
+  <div class="bottomin">
+
+    <div>
+      <div class="small">總計</div>
+
+      <div class="total">
+        $<span id="total">0</span>
+      </div>
+    </div>
+
+
+    <button
+      class="btn"
+      onclick="goCheckout()"
+    >
+      查看訂單
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- Supabase -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+/* =====================================
+   Supabase
+===================================== */
+
+const SUPABASE_URL =
+  "https://ptsfvtmsebldihmzjpvp.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_9-BDCAlfHuRqRB6pYJAxMQ_HKXTQHzq";
+
+
+const { createClient } = supabase;
+
+
+const db = createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth:{
+      persistSession:false,
+      autoRefreshToken:false
+    }
+  }
+);
+
+
+/* =====================================
+   全域
+===================================== */
+
+let products = [];
+
+let cart = {};
+
+let itemNotes = {};
+
+let currentType = "meal";
+
+let currentCat = "all";
+
+let vegOnly = false;
+
+let sending = false;
+
+
+const DRINK_KEYWORDS = [
+  "飲料","飲品","熱飲","冷飲","果汁","茶飲",
+  "豆漿","咖啡","奶茶","紅茶","綠茶","烏龍",
+  "可樂","汽水","牛奶","鮮奶","冰飲"
+];
+
+
+/* =====================================
+   讀取菜單
+===================================== */
+
+async function loadProducts(){
+
+  try{
+
+    let query = db
+      .from("products")
+      .select(
+        "id,name,price,category,description,enabled,vegetarian"
+      )
+      .eq("enabled",true)
+      .order("id",{ascending:true});
+
+
+    let {
+      data,
+      error
+    } = await query;
+
+
+    if(
+      error &&
+      /vegetarian/i.test(error.message || "")
+    ){
+
+      const retry = await db
+        .from("products")
+        .select(
+          "id,name,price,category,description,enabled"
+        )
+        .eq("enabled",true)
+        .order("id",{ascending:true});
+
+      data = retry.data;
+      error = retry.error;
+
+    }
+
+
+    if(error){
+      throw error;
+    }
+
+
+    products = data || [];
+
+
+    document
+      .getElementById("notice")
+      .textContent =
+      "✅ 菜單已連線到資料庫";
+
+
+    renderTabs();
+
+    render();
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    document
+      .getElementById("notice")
+      .textContent =
+      "❌ 無法讀取菜單";
+
+
+    document
+      .getElementById("errorBox")
+      .innerHTML =
+      `<div class="error">
+        ${escapeHtml(error.message)}
+      </div>`;
+
+  }
+
+}
+
+
+/* =====================================
+   金額
+===================================== */
+
+function money(n){
+
+  return Number(n)
+    .toLocaleString("zh-TW");
+
+}
+
+
+/* =====================================
+   餐點／飲料
+===================================== */
+
+function isDrink(item){
+
+  const category = item.category || "";
+
+  const name = item.name || "";
+
+  if(
+    DRINK_KEYWORDS.some(
+      word => category.includes(word)
+    )
+  ){
+    return true;
+  }
+
+  if(
+    ["餐點","主食","套餐","吐司","漢堡","蛋餅","飯糰","麵","飯"]
+      .some(word => category.includes(word))
+  ){
+    return false;
+  }
+
+  return DRINK_KEYWORDS.some(
+    word => name.includes(word)
+  );
+
+}
+
+
+function isVegetarian(item){
+
+  const flag = item.vegetarian;
+
+  if(
+    flag === true ||
+    flag === 1 ||
+    flag === "1" ||
+    flag === "true" ||
+    flag === "素" ||
+    flag === "素食"
+  ){
+    return true;
+  }
+
+  const text =
+    `${item.category || ""} ${item.name || ""} ${item.description || ""}`;
+
+  return /素食|蔬食|全素|蛋奶素/.test(text);
+
+}
+
+
+function typedProducts(){
+
+  return products.filter(x => {
+
+    const typeOk =
+      currentType === "drink"
+        ? isDrink(x)
+        : !isDrink(x);
+
+    const vegOk =
+      !vegOnly ||
+      isVegetarian(x);
+
+    return typeOk && vegOk;
+
+  });
+
+}
+
+
+/* =====================================
+   分類
+===================================== */
+
+function renderTabs(){
+
+  const cats = [
+    ...new Set(
+      typedProducts()
+        .map(x=>x.category)
+        .filter(Boolean)
+    )
+  ];
+
+
+  const tabs =
+    document.getElementById("tabs");
+
+
+  if(cats.length <= 1){
+
+    tabs.innerHTML = "";
+
+    return;
+  }
+
+
+  tabs.innerHTML =
+
+    `<button
+      class="tab ${currentCat === "all" ? "active" : ""}"
+      onclick="showCat('all',this)"
+    >
+      全部
+    </button>`
+
+    +
+
+    cats.map(c=>
+
+      `<button
+        class="tab ${currentCat === c ? "active" : ""}"
+        onclick="showCat(${JSON.stringify(c)},this)"
+      >
+        ${escapeHtml(c)}
+      </button>`
+
+    ).join("");
+
+}
+
+
+/* =====================================
+   顯示商品
+===================================== */
+
+function render(){
+
+  const list =
+    typedProducts().filter(
+      x =>
+        currentCat === "all" ||
+        x.category === currentCat
+    );
+
+
+  const emptyText =
+    vegOnly
+      ? "目前沒有素食品項"
+      : currentType === "drink"
+        ? "目前沒有飲料"
+        : "目前沒有餐點";
+
+
+  document
+    .getElementById("menu")
+    .innerHTML =
+
+    list.length
+      ? list.map(x=>{
+
+      const q =
+        cart[x.id] || 0;
+
+      const note =
+        itemNotes[x.id] || "";
+
+
+      return `
+
+        <div class="card">
+
+          <div class="card-main">
+
+            <div>
+
+              <div class="name">
+                ${escapeHtml(x.name)}
+                ${
+                  isVegetarian(x)
+                    ? `<span class="veg-badge">素</span>`
+                    : ""
+                }
+              </div>
+
+              <div class="desc">
+                ${escapeHtml(
+                  x.description || ""
+                )}
+              </div>
+
+              <div class="price">
+                $${money(x.price)}
+              </div>
+
+            </div>
+
+
+            <div class="qty">
+
+              <button
+                onclick="change(${x.id},-1)"
+              >
+                −
+              </button>
+
+              <b>
+                ${q}
+              </b>
+
+              <button
+                onclick="change(${x.id},1)"
+              >
+                ＋
+              </button>
+
+            </div>
+
+          </div>
+
+          <input
+            class="item-note"
+            type="text"
+            maxlength="80"
+            placeholder="備註，例如：需要調整口味、不要蔥、蛋要熟一點"
+            value="${escapeHtml(note)}"
+            oninput="setItemNote(${x.id},this.value)"
+          >
+
+        </div>
+
+      `;
+
+    }).join("")
+      : `<div class="card"><div class="desc">${emptyText}</div></div>`;
+
+
+  updateTotal();
+
+}
+
+
+/* =====================================
+   餐點／飲料切換
+===================================== */
+
+function showDiet(diet,b){
+
+  vegOnly = diet === "veg";
+
+  currentCat = "all";
+
+
+  document
+    .querySelectorAll(".diet-btn")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+
+  b.classList.add("active");
+
+
+  renderTabs();
+
+  render();
+
+}
+
+
+function showType(type,b){
+
+  currentType = type;
+
+  currentCat = "all";
+
+
+  document
+    .querySelectorAll(".type-btn")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+
+  b.classList.add("active");
+
+
+  renderTabs();
+
+  render();
+
+}
+
+
+/* =====================================
+   分類切換
+===================================== */
+
+function showCat(c,b){
+
+  currentCat = c;
+
+
+  document
+    .querySelectorAll("#tabs .tab")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
+
+
+  b.classList.add("active");
+
+
+  render();
+
+}
+
+
+/* =====================================
+   購物車
+===================================== */
+
+function setItemNote(id,value){
+
+  itemNotes[id] = value;
+
+}
+
+
+function itemNoteOf(id){
+
+  return String(itemNotes[id] || "")
+    .trim();
+
+}
+
+
+function change(id,d){
+
+  cart[id] =
+    Math.max(
+      0,
+      (cart[id] || 0) + d
+    );
+
+
+  render();
+
+}
+
+
+/* =====================================
+   總金額
+===================================== */
+
+function updateTotal(){
+
+  const total =
+    products.reduce(
+      (s,x)=>
+        s +
+        (cart[x.id] || 0) *
+        Number(x.price),
+      0
+    );
+
+
+  document
+    .getElementById("total")
+    .textContent =
+    money(total);
+
+}
+
+
+/* =====================================
+   確認訂單
+===================================== */
+
+function goCheckout(){
+
+  const selected =
+    products.filter(
+      x => cart[x.id]
+    );
+
+
+  if(!selected.length){
+
+    alert("購物車還沒有餐點");
+
+    return;
+  }
+
+
+  document
+    .getElementById("summary")
+    .innerHTML =
+
+    selected.map(x=>{
+
+      const note = itemNoteOf(x.id);
+
+      return `
+
+      <div class="line">
+
+        <span>
+          ${escapeHtml(x.name)}
+          ${
+            isVegetarian(x)
+              ? `<span class="veg-badge">素</span>`
+              : ""
+          }
+          × ${cart[x.id]}
+          ${
+            note
+              ? `<div class="item-note-text">
+                  ${escapeHtml(note)}
+                </div>`
+              : ""
+          }
+        </span>
+
+        <b>
+          $${money(
+            Number(x.price) *
+            cart[x.id]
+          )}
+        </b>
+
+      </div>`
+
+    }).join("");
+
+
+  document
+    .getElementById("checkout")
+    .classList.add("show");
+
+
+  document
+    .getElementById("checkout")
+    .scrollIntoView({
+      behavior:"smooth"
+    });
+
+}
+
+
+/* =====================================
+   訂單編號
+===================================== */
+
+function generateOrderNo(){
+
+  const now =
+    new Date();
+
+
+  const y =
+    now.getFullYear()
+      .toString()
+      .slice(-2);
+
+
+  const m =
+    String(
+      now.getMonth()+1
+    ).padStart(2,"0");
+
+
+  const d =
+    String(
+      now.getDate()
+    ).padStart(2,"0");
+
+
+  const random =
+    Math.floor(
+      1000 +
+      Math.random()*9000
+    );
+
+
+  return `A${y}${m}${d}${random}`;
+
+}
+
+
+/* =====================================
+   Database ID
+===================================== */
+
+function generateId(){
+
+  return (
+    Date.now() * 1000 +
+    Math.floor(
+      Math.random()*1000
+    )
+  );
+
+}
+
+
+/* =====================================
+   送出訂單
+===================================== */
+
+async function submitOrder(){
+
+  if(sending){
+    return;
+  }
+
+
+  const selected =
+    products.filter(
+      x=>cart[x.id]
+    );
+
+
+  if(!selected.length){
+
+    alert("請先選餐點");
+
+    return;
+  }
+
+
+  const customer =
+    document
+      .getElementById("customer")
+      .value
+      .trim();
+
+
+  const tableNo =
+    document
+      .getElementById("tableNo")
+      .value
+      .trim();
+
+
+  const note =
+    document
+      .getElementById("note")
+      .value
+      .trim();
+
+
+  const itemNoteText =
+    selected
+      .map(x=>{
+
+        const itemNote =
+          itemNoteOf(x.id);
+
+        return itemNote
+          ? `${x.name} × ${cart[x.id]}：${itemNote}`
+          : "";
+
+      })
+      .filter(Boolean)
+      .join("\n");
+
+
+  const orderNote =
+    [itemNoteText, note]
+      .filter(Boolean)
+      .join("\n");
+
+
+  if(!customer){
+
+    alert("請輸入姓名／稱呼");
+
+    return;
+  }
+
+
+  if(!tableNo){
+
+    alert("請輸入桌號");
+
+    return;
+  }
+
+
+  const total =
+    selected.reduce(
+      (s,x)=>
+        s +
+        Number(x.price) *
+        cart[x.id],
+      0
+    );
+
+
+  const orderNo =
+    generateOrderNo();
+
+
+  const orderId =
+    generateId();
+
+
+  const order = {
+
+    id:orderId,
+
+    order_no:orderNo,
+
+    customer:customer,
+
+    table_no:tableNo,
+
+    note:orderNote,
+
+    total:total,
+
+    status:"new",
+
+    created_at:
+      new Date().toISOString()
+
+  };
+
+
+  const btn =
+    document
+      .getElementById("submitBtn");
+
+
+  const errorBox =
+    document
+      .getElementById("errorBox");
+
+
+  try{
+
+    sending = true;
+
+    btn.disabled = true;
+
+    btn.textContent =
+      "送出中……";
+
+    errorBox.innerHTML = "";
+
+
+    console.log(
+      "送出 orders:",
+      order
+    );
+
+
+    /* =================================
+       建立 orders
+    ================================= */
+
+    const {
+		error: orderError
+	} = await db
+		.from("orders")
+		.insert(order);
+
+	if(orderError){
+
+		console.error(orderError);
+
+		throw new Error(
+    "建立訂單失敗：\n" +
+    orderError.message
+	);
+
+	}
+
+	const realOrderId = orderId;
+
+
+    console.log(
+      "orders 建立成功:",
+      realOrderId
+    );
+
+
+    /* =================================
+       建立 order_items
+    ================================= */
+
+    const rows =
+      selected.map(x=>{
+
+        const itemNote =
+          itemNoteOf(x.id);
+
+        return {
+
+          order_id:
+            realOrderId,
+
+          product_id:
+            x.id,
+
+          name:
+            itemNote
+              ? `${x.name}（${itemNote}）`
+              : x.name,
+
+          price:
+            Number(x.price),
+
+          quantity:
+            cart[x.id]
+
+        };
+
+      });
+
+
+    const {
+      error:itemError
+    } = await db
+      .from("order_items")
+      .insert(rows);
+
+
+    if(itemError){
+
+      console.error(
+        itemError
+      );
+
+      throw new Error(
+        "訂單已建立，但餐點明細建立失敗：\n" +
+        itemError.message
+      );
+
+    }
+
+
+    /* =================================
+       成功
+    ================================= */
+
+    document
+      .getElementById("orderNo")
+      .textContent =
+      orderNo;
+
+
+    document
+      .getElementById("checkout")
+      .classList.remove("show");
+
+
+    document
+      .getElementById("result")
+      .classList.add("show");
+
+
+    document
+      .getElementById("result")
+      .scrollIntoView({
+        behavior:"smooth"
+      });
+
+
+  }catch(error){
+
+    console.error(
+      "送單失敗:",
+      error
+    );
+
+
+    errorBox.innerHTML =
+      `<div class="error">
+        ❌ ${escapeHtml(
+          error.message ||
+          String(error)
+        )}
+      </div>`;
+
+
+    alert(
+      "送出失敗：\n" +
+      (
+        error.message ||
+        String(error)
+      )
+    );
+
+
+  }finally{
+
+    sending = false;
+
+    btn.disabled = false;
+
+    btn.textContent =
+      "送出訂單";
+
+  }
+
+}
+
+
+/* =====================================
+   重設
+===================================== */
+
+function resetOrder(){
+
+  cart = {};
+
+  itemNotes = {};
+
+
+  document
+    .getElementById("customer")
+    .value = "";
+
+
+  document
+    .getElementById("tableNo")
+    .value = "";
+
+
+  document
+    .getElementById("note")
+    .value = "";
+
+
+  document
+    .getElementById("errorBox")
+    .innerHTML = "";
+
+
+  document
+    .getElementById("result")
+    .classList.remove("show");
+
+
+  render();
+
+
+  window.scrollTo({
+    top:0,
+    behavior:"smooth"
+  });
+
+}
+
+
+/* =====================================
+   HTML 安全處理
+===================================== */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================
+   啟動
+===================================== */
+
+loadProducts();
+
+</script>
+
+</body>
+</html>
